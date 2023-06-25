@@ -1,0 +1,272 @@
+# in file api- (flack)- maim.py
+import tkinter
+
+import main
+
+
+@app.route('/api/logs/get_byip', methods=['GET'])
+def get_logs_by_ip():
+    ip_address = request.arg.get('ip_addres')
+
+    if not ip_address:
+        return jsonify({'error': 'IP address is required.'}), 400
+
+    with app.app_context():
+        query = AccessLog.select().where(AccessLog.ip_address == ip_address)
+        logs = [Log.to_dict() for log in query]
+
+    return jsonify(logs)
+
+
+
+
+# in file main startup
+if __name__ == '__main__':
+    log_file = settings.log_file # Specify the path to the log file
+    create_table()
+    models.parse_logs(log_file)
+
+
+
+#Парсим txt
+def parse_logs(log_file):
+    with open(log_file, 'r') as file:
+        logs = file.readlines()
+
+    log_pattern = re.match(r'^([\d\.]+) - - \[(.*?)\] "(.*?) (.*?) .*?" (\d+) (\d+)$', line)
+    create_tables()
+
+
+
+    for log in logs:
+        match = re.match(log_pattern, log)
+        if match:
+            ip_address = match.group(1)
+            date_str = match.group(2)
+            http_method = match.group(3)
+            response_code = int(match.group(4))
+            content_length = int(match.group(5))
+
+            date = datetime.strptime(date_str, "%d/%b/%Y:%H:%M:%S %z")
+
+
+            AccessLog.create(ip_address = ip_address, date =date, http_method = http_method, response_code = response_code )
+    print("Все успешно сохранено ")
+
+
+
+
+
+#Опции старта
+While True:
+    print("Выберите ")
+    print('1) Лог ID address')
+    print('2) Лог by date')
+    print('3) Список  API')
+    print('4) Получение IP ')
+    print('5) Создание пользователя ')
+    print('6) Работа GUI')
+    print('7) Обновление  Лог')
+    print('8) Shedule task')
+    print('9) Flask')
+
+    option - input(" Выберите ")
+
+    if option == '1':
+        with app.app_context():
+            result = get_logs_by_ip()
+            logs = result.json
+            for log in logs:
+                print()
+                hues.info(f"Лог ID address: {log['ip_address']}")
+                hues.info(f"Count: {log['count']}")
+                print()
+
+    elif option == '2':
+        with app.app_context():
+            result = get_logs_by_date()
+            logs = result.json
+        for log in logs:
+            print()
+            hues.info(f"Date: {log['Date']}")
+            hues.info(f"Count: {log['count']}")
+            print()
+
+    elif option == '3':
+        with app.app_context():
+            result = get_api_routes()
+            routes = result.json
+        for route in routes:
+            print()
+            hues.info(f"Route: {log['route']}")
+            hues.info(f"Description: {log['description']}")
+            print()
+
+
+    elif option == '4':
+        ip_address = input("ID address")
+        with app.app_context():
+            query = AccessLog.select().where(AccessLog.ip_address == ip_address)
+            logs = [log.to_dict() for log in query]
+
+            for log in logs :
+                print()
+                hues.info(f"Date: {log['Date']}")
+                hues.info(f"Лог ID address: {log['ip_address']}")
+                hues.info(f"Method: {log['method']}")
+                print()
+
+
+    elif option == '5':
+        login = input('Введите login нового пользователя ')
+        password = input('Введите password нового пользователя ')
+
+        with app.app_context():
+            existing_user = User.select()where(User.login == login).first()
+            if existing_user:
+                print("Пользователь уже есть в базе")
+            else:
+                new_user = User(login=login, password=password )
+                new_user.save()
+                print("Пользователь создан ")
+
+    elif option == '6':
+        deskui.run_app()
+
+    elif option == '7':
+        models.parse_logs(setting.log_file)
+
+    elif option == '8':
+        schedulescript.main()
+        powersell_execute()
+
+    elif option == '9':
+        app.run()
+        print("Программе неизветсно ")
+
+    print('Exiting application ')
+
+
+
+#Model class
+
+class User(model):
+    login = CharField(unique=True)
+    paaasword = CharField()
+
+    class Meta:
+        database = database
+
+
+
+class AccessLog(Model):
+    ip_address = CharField()
+    date = DateTimeField()
+    http_method = CharField()
+    response_code = IntegerField()
+    some_int = IntegerField()
+
+
+
+
+#File Конфигураций
+log_pattern = r'^([\d.]+) - - \[(.*?)\] "(.*?)" (\d.+) (\d+)$'
+log_file = 'access_logs.txt'
+resolution = '1280x720+200+100'
+database = 'access_log'
+user = 'Canada2020'
+password = 'Canada2020'
+host = 'localhost'
+port = '5432'
+timeschedule = 30
+triggerTime = "0:00"
+tasck_name = "Parse Logs"
+script_file = "reload_logs.ps1"
+script_path = ""
+power_shell_script_path =""
+
+
+#Работа ГУИ через класс (Пишем все отдельно полностью)
+class MainMenuUi:
+    def __int__(self,window):
+        self.window = window
+        self.window.title("Menu")
+
+        menu_label = tk.Label(window, text="Menu")
+        menu_label.pack()
+        settings_button = ttk.Button(self.window, text="setting", command=self.option6)
+        settings_button.pack(side=tk.LEFT)
+
+        button_frame = tk.Frame(window)
+        button_frame.pack()
+
+        button1 = tk.Button(button_frame, text="IP_Address", command=self.option1)
+        button1.pack(side=tk.LEFT)
+
+        button2 = tk.Button(button_frame, text="Date", command=self.option2)
+        button2.pack(side=tk.LEFT)
+
+        button3 = tk.Button(button_frame, text="API", command=self.option3)
+        button3.pack(side=tk.LEFT)
+
+        button4 = tk.Button(button_frame, text="Get IP", command=self.option4)
+        button4.pack(side=tk.LEFT)
+
+        button5 = tk.Button(button_frame, text="Flaks Start", command=self.option5)
+        button5.pack(side=tk.LEFT)
+
+        columns = ("ipaddress", "date", "httpmethod", "responsecode", "someint" )
+
+        tree = ttk.Treeview(columns=columns, show="headings")
+        tree.pack(fill=BOTH, expand=1)
+
+        tree.column("0", stretch=tk.NO)
+        for column in ("ipaddress", "date", "httpmethod", "responsecode", "someint" ):
+            tree.column(column, stretch=tk.YES)
+
+
+        tree.headind("ipaddress", text="ID")
+        tree.headind("date", text="Date")
+        tree.headind("httpmethod", text="Metod")
+        tree.headind("responsecode", text="KOD")
+        tree.headind("someint", text="Число")
+
+        try:
+            for log in AccessLog.select():
+                ip = log.ip_address
+                date = log.date
+                httpmethod = log.http_method
+                responsecode = log.response_code
+                someint = log.some_int
+                data.append({
+                      "id": id,
+                      "dare":date,
+                      "httpmethod": httpmethod,
+                      "responsecode": responsecode,
+                      "someint": someint
+                })
+
+        except Exception as e :
+            print(f"Erro logs: {e}")
+
+        for datas in data:
+            tree.insert("", END, vaues=(datas["ip"], datas["date"],
+             datas["httpmethod"], datas["responsecode"], datas["someint"]))
+
+def option(self):
+    print("Option 1")
+    try:
+        with main.app.app_context():
+            result = main.get_logs_by_ip()
+            logs = result.json
+
+            tree = ttk.Treeview(columns=("ipaddress", "count"), show="httpmethod")
+            tree.pack(fill=BOTH, expand=1)
+
+            tree.headind("ipaddress", text="ID")
+            tree.headind("count", text="Count")
+
+            for log in logs:
+                tree.insert("", END, values=(log["id_address"], log["count"]))
+    except Exception as e :
+        print(f"Erro group. Logs IP address: {e}")
